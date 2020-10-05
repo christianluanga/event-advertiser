@@ -1,0 +1,15 @@
+div.home-page {
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: beige;
+  margin: 2rem auto;
+  border-radius: 5pt;
+}
+
+div.home-page p {
+  width: 50%;
+  font-family: "Times New Roman", Times, serif;
+}
