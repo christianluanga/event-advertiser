@@ -14,6 +14,8 @@ import {Link} from "react-router-dom"
 import {getCookie, isAuth} from "../auth/Helpers"
 import {defaultUrl} from "../helpers/defaultImageUrl"
 import Toastify from "../utils/Toastify"
+import {useState} from "react"
+import LoadingButton from "../utils/LoadingButton"
 
 const useStyles = makeStyles({
   root: {
@@ -26,7 +28,7 @@ const useStyles = makeStyles({
 
 const EventCard = ({id, details, status, filter}) => {
   const classes = useStyles()
-
+  const [isLoading, setIsLoading] = useState(false)
   const handleDelete = () => {
     axios({
       method: "delete",
@@ -45,16 +47,24 @@ const EventCard = ({id, details, status, filter}) => {
       })
   }
   const handleCancelation = async () => {
+    setIsLoading(true)
     axios({
       method: "put",
       url: `/api/user/event/${id}`,
-      data: {userID: isAuth().id}
+      data: {userID: isAuth().id},
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+        Accept: "application/json, text/plain, */*",
+        "Content-Type": "application/json"
+      }
     })
       .then((response) => {
         toast.success("Event Successfully canceled")
+        setIsLoading(false)
       })
       .catch((err) => {
         toast.error(`Cancelation failed due to ${err.message}`)
+        setIsLoading(false)
         console.error(err.message)
       })
   }
@@ -104,15 +114,19 @@ const EventCard = ({id, details, status, filter}) => {
             <>
               {isAuth() && isAuth().role === "user" && filter !== "more" ? (
                 <>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    color="secondary"
-                    disabled={status !== "upcoming" ? true : false}
-                    onClick={() => handleCancelation(id)}
-                  >
-                    Cancel
-                  </Button>
+                  {isLoading ? (
+                    <LoadingButton buttonText=" Canceling " />
+                  ) : (
+                    <Button
+                      size="small"
+                      variant="contained"
+                      color="secondary"
+                      disabled={status !== "upcoming" ? true : false}
+                      onClick={() => handleCancelation(id)}
+                    >
+                      Cancel
+                    </Button>
+                  )}
                 </>
               ) : (
                 <>

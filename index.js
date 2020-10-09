@@ -1,4 +1,5 @@
 const express = require("express")
+const path = require("path")
 const {urlencoded, json} = require("express")
 const dotenv = require("dotenv")
 const morgan = require("morgan")
@@ -26,6 +27,14 @@ app.use("/api", protect)
 app.use("/api/event", eventRouter)
 app.use("/api/user", userRouter)
 
+//Serve static asests
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("frontend/build"))
+
+  app.get("*", (req, res) => {
+    res.sendfile(path.resolve(__dirname, "frontend", "build", "index.js"))
+  })
+}
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
   console.log(`connected on port ${PORT}`)

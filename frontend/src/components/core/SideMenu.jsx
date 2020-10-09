@@ -1,6 +1,7 @@
 import {Divider, Grid, Typography} from "@material-ui/core"
 import React from "react"
 import {Button} from "react-bootstrap"
+import {isAuth} from "../auth/Helpers"
 
 const UserSideMenu = ({
   handleEventFiltering,
@@ -13,7 +14,7 @@ const UserSideMenu = ({
     <>
       <Grid item sm={12} lg={3}>
         <Typography variant="body1" as="h2" className={("text-center", "mb-3")}>
-          Filter My Events By:
+          {isAuth() && <span>{isAuth().name} - </span>}Filter My Events By:
         </Typography>
         <div>
           <Button
@@ -39,6 +40,14 @@ const UserSideMenu = ({
             onClick={() => handleEventFiltering("canceled")}
           >
             Canceled
+          </Button>
+          <Button
+            variant={eventFilter === "TBC" ? "warning" : "light"}
+            size="sm"
+            block
+            onClick={() => handleEventFiltering("TBC")}
+          >
+            TBC
           </Button>
           <Button
             variant={eventFilter === "all" ? "secondary" : "light"}

@@ -83,14 +83,15 @@ const getUserEventIDs = (model) => async (req, res, next) => {
 const updateUserEvent = (model) => (req, res) => {
   const {eventID} = req.params
   const {userID} = req.body
-  console.log(eventID, userID)
+
   model
-    .updateOne(
-      {_id: userID, "event.eventID": eventID},
-      {$set: {"event.$.status": "canceled"}},
+    .findOneAndUpdate(
+      {_id: userID, "event.$.eventID": eventID},
+      {$set: {"event.$.status": "TBC"}},
       {new: true}
     )
     .exec((err, event) => {
+      console.log(event)
       if (err || !event) {
         return res.status(400).json({
           error: "event does not exist"

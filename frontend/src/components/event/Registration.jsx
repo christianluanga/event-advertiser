@@ -31,7 +31,7 @@ const RegistrationForm = ({eventID, history}) => {
       }
     })
       .then((response) => {
-        toast.success("You registration was successful")
+        toast.success("Your registration was successful")
         setTimeout(() => {
           history.push(`/event/get/${isAuth().id}/all`)
         }, 4100)

@@ -3,7 +3,6 @@ import axios from "axios"
 import {makeStyles, Grid, Typography, Divider} from "@material-ui/core"
 import EventCard from "../core/EventCard"
 import {getCookie, isAuth} from "../auth/Helpers"
-import {Button} from "react-bootstrap"
 import {withRouter} from "react-router-dom"
 import UserSideMenu from "../core/SideMenu"
 import AdminSideMenu from "../admin/SideMenu"
@@ -51,17 +50,8 @@ const EventList = ({user, filter, history}) => {
   }
   console.log(filter)
   const handleEventFiltering = (status) => {
-    //let filteredEvents = []
-    const unfilteredEvents = JSON.parse(
-      sessionStorage.getItem("unfilteredEvents")
-    )
     setEventFilter(status)
-    if (status === "all") return setEvents(unfilteredEvents)
-    const filteredEvents = unfilteredEvents.filter(
-      (event) => event.status === status
-    )
-    setEvents(filteredEvents)
-    history.push(`/event/get/${user}/${eventFilter}`)
+    history.push(`/event/get/${user}/${status}`)
   }
 
   return (
@@ -84,16 +74,21 @@ const EventList = ({user, filter, history}) => {
         )}
         {events.length > 0 ? (
           <Fragment>
-            {events.map((event, index) => (
-              <Grid item sm={12} lg={3} key={index}>
-                <EventCard
-                  id={event._id}
-                  details={event.details}
-                  status={event.status}
-                  filter={eventFilter}
-                />
-              </Grid>
-            ))}
+            {events
+              .filter((event) => {
+                if (eventFilter === "all") return events
+                return event.status === eventFilter
+              })
+              .map((event, index) => (
+                <Grid item sm={12} lg={3} key={index}>
+                  <EventCard
+                    id={event._id}
+                    details={event.details}
+                    status={event.status}
+                    filter={eventFilter}
+                  />
+                </Grid>
+              ))}
           </Fragment>
         ) : (
           <Typography style={{textAlign: "center", margin: "10% auto"}}>
