@@ -127,6 +127,11 @@ const EventCard = ({id, details, status, filter}) => {
                       Cancel
                     </Button>
                   )}
+                  <Button size="small" color="primary" variant="outlined">
+                    <Link to={`/event/${details.category}/${id}`}>
+                      Learn More
+                    </Link>
+                  </Button>
                 </>
               ) : (
                 <>

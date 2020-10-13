@@ -6,6 +6,7 @@ import {getCookie, isAuth} from "../auth/Helpers"
 import {withRouter} from "react-router-dom"
 import UserSideMenu from "../core/SideMenu"
 import AdminSideMenu from "../admin/SideMenu"
+import {Button} from "react-bootstrap"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,13 +21,16 @@ const EventList = ({user, filter, history}) => {
   let URL = "/event/all"
 
   if (isAuth() && isAuth().role === "user") {
-    URL = `/api/user/event/${user}/mine`
+    URL = `/api/user/event/${user}/${filter}`
   } else if (isAuth() && isAuth().role === "admin") {
     URL = `/api/event/admin/${user}/${filter}`
   }
+  if (filter === "more") URL = "/event/all"
+
   useEffect(() => {
     getEvents(URL, "user page")
   }, [URL, eventFilter])
+
   const getEvents = (url, target) => {
     axios
       .get(url, {
@@ -38,19 +42,17 @@ const EventList = ({user, filter, history}) => {
       })
       .then((response) => {
         const {data} = response
+        console.log(data)
         setEvents(data)
-        sessionStorage.setItem("events", JSON.stringify(data))
-        if (target === "user page") {
-          sessionStorage.setItem("unfilteredEvents", JSON.stringify(data))
-        }
       })
       .catch((err) => {
         console.error(err)
       })
   }
-  console.log(filter)
+
   const handleEventFiltering = (status) => {
     setEventFilter(status)
+
     history.push(`/event/get/${user}/${status}`)
   }
 
@@ -73,28 +75,34 @@ const EventList = ({user, filter, history}) => {
           />
         )}
         {events.length > 0 ? (
-          <Fragment>
-            {events
-              .filter((event) => {
-                if (eventFilter === "all") return events
-                return event.status === eventFilter
-              })
-              .map((event, index) => (
-                <Grid item sm={12} lg={3} key={index}>
-                  <EventCard
-                    id={event._id}
-                    details={event.details}
-                    status={event.status}
-                    filter={eventFilter}
-                  />
-                </Grid>
-              ))}
-          </Fragment>
+          events.map((event, index) => (
+            <Grid item sm={12} lg={3} key={index}>
+              <EventCard
+                id={event._id}
+                details={event.details}
+                status={event.status}
+                filter={eventFilter}
+              />
+            </Grid>
+          ))
         ) : (
           <Typography style={{textAlign: "center", margin: "10% auto"}}>
-            {eventFilter === "all"
-              ? "You do not have any events at the moment"
-              : `You do not have any ${eventFilter.toUpperCase()} events`}
+            {eventFilter === "all" ? (
+              <>
+                <p>
+                  You have not registered for any events yet. Visit the events
+                  page to get started
+                </p>
+                <Button
+                  onClick={() => handleEventFiltering("more")}
+                  variant="primary"
+                >
+                  Go To The Events Page
+                </Button>
+              </>
+            ) : (
+              `You do not have any ${eventFilter} events at the moment`
+            )}
           </Typography>
         )}
       </Grid>

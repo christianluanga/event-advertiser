@@ -4,7 +4,6 @@ const {urlencoded, json} = require("express")
 const dotenv = require("dotenv")
 const morgan = require("morgan")
 const cors = require("cors")
-require("./utils/db")
 const {protect, signin, signup} = require("./utils/auth")
 const eventRouter = require("./src/resource/event/event.router")
 const userRouter = require("./src/resource/user/user.router")
@@ -12,6 +11,8 @@ const {
   getEventsForNonAuthUsers,
   getOneEvent
 } = require("./src/resource/event/event.controllers")
+require("./utils/db")
+
 const app = express()
 app.use(urlencoded({extended: true}))
 app.use(json())

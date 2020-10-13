@@ -63,13 +63,10 @@ const UserSideMenu = ({
             variant={eventFilter === "more" ? "outline-primary" : "light"}
             size="sm"
             block
-            onClick={() => {
-              getEvents(`/api/event/user/${user}/all`, "event page")
-              setEventFilter("more")
-            }}
+            onClick={() => handleEventFiltering("more")}
             style={{marginTop: "1rem", textAlign: "left"}}
           >
-            Go To The Event Page
+            Go To The Events Page
           </Button>
         </div>
       </Grid>

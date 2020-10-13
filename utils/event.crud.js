@@ -37,12 +37,19 @@ const getUserEvents = (model) => async (req, res) => {
   let ids = []
 
   eventIDs.event.map((event) => ids.push(event.eventID))
-  let query = {
-    $and: [{_id: {$in: ids}}]
-  }
+
+  //return all events for which a user has registered for
+  let query = {}
+  //return all event for which the user is not registered for
   if (filter === "all") {
     query = {
-      $and: [{_id: {$nin: ids}}]
+      $and: [{_id: {$in: ids}}]
+    }
+  } else {
+    //return all events
+    query = {
+      $and: [{_id: {$in: ids}}],
+      status: filter
     }
   }
 
@@ -54,15 +61,19 @@ const getUserEvents = (model) => async (req, res) => {
     res.status(400).end()
   }
 }
+
 const getEventsForNonAuthUsers = (model) => async (req, res) => {
+  const {eventIDs} = req
+
   try {
-    const events = await model.find({status: "upcoming"}).lean().exec()
+    const events = await model.find({}).lean().exec()
     res.status(200).json(events)
   } catch (err) {
     console.error(err)
     res.status(400).end()
   }
 }
+
 const updateOneEvent = (model) => async (req, res) => {
   const updatedEventDetails = req.body
   try {

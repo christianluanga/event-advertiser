@@ -14,7 +14,7 @@ export const eventInitialValues = {
   venue: {name: "", capacity: 0, country: "", city: ""},
   speakers: [
     {
-      name: "Mr. Francis Brian",
+      name: "",
       picture: "",
       slots: [
         {
@@ -32,7 +32,7 @@ export const eventInitialValues = {
       ]
     },
     {
-      name: "Sir. Liliame Mcrooney",
+      name: "",
       picture: "",
       slots: [
         {

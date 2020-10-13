@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react"
-import {Button} from "react-bootstrap"
 import axios from "axios"
 import {makeStyles, Grid} from "@material-ui/core"
 import Agenda from "./Agenda"
 import {withRouter} from "react-router-dom"
 import {getCookie, isAuth} from "../auth/Helpers"
 import {defaultUrl} from "../helpers/defaultImageUrl"
+import {Button} from "react-bootstrap"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +34,7 @@ const Details = ({id, history}) => {
         console.error(err)
         setEventLoaded(true)
       })
-  }, [id])
+  }, [id, URL])
   return (
     <div className={(classes.root, "border border-default", "my-3")}>
       {eventLoaded ? (
@@ -53,20 +53,20 @@ const Details = ({id, history}) => {
             </Grid>
             <Grid item sm={12} lg={6}>
               <Agenda event={event} />
+              <Button
+                variant="secondary"
+                size="sm"
+                className="m-3"
+                onClick={() => {
+                  isAuth()
+                    ? history.push(`/event/get/${isAuth().id}/all`)
+                    : history.push(`/event/all`)
+                }}
+              >
+                Back To The Events Page
+              </Button>
             </Grid>
           </Grid>
-          {/* <Button
-            variant="primary"
-            size="sm"
-            className="m-2"
-            onClick={
-              isAuth()
-                ? history.push(`/event/get/${isAuth().id}/all`)
-                : history.push(`/event/all`)
-            }
-          >
-            Go To The Event Page
-          </Button> */}
         </>
       ) : (
         <h3>Loading...</h3>

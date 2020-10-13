@@ -6,11 +6,15 @@ import FormControlInputText from "../form control/TextField"
 import {getCookie, isAuth} from "../auth/Helpers"
 import Toastify from "./Toastify"
 import {withRouter} from "react-router-dom"
+import {useState} from "react"
+import LoadingButton from "./LoadingButton"
 
-const EventForm = ({initialValues, url, method, history, btnText}) => {
+const EventForm = ({initialValues, url, method, history, btnText, message}) => {
+  const [isLoading, setIsLoading] = useState(false)
   const formik = useFormik({
     initialValues: {...initialValues, createdBy: isAuth().id},
     onSubmit: (values) => {
+      setIsLoading(true)
       axios({
         method: method,
         url: url,
@@ -22,13 +26,15 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
         }
       })
         .then((response) => {
-          toast.success("Event succefully registered")
+          setIsLoading(false)
+          toast.success(`Event succefully ${message}`)
           setTimeout(() => {
             history.push(`/event/get/${isAuth().id}/all`)
           }, 3100)
         })
         .catch((err) => {
-          toast.error(`Event registration failed ${err.message}`)
+          setIsLoading(false)
+          toast.error(`Event not ${message}, ${err.message}`)
         })
     }
   })
@@ -279,7 +285,7 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
               <FormControlInputText
                 type="time"
                 id="inputSpeaker1Slot1"
-                name="speakers[0].slots[1].time"
+                name="speakers[0].slots[0].time"
                 placeholder="Speaker 1 Slot 1"
                 formik={formik}
                 value={formik.values.speakers[0].slots[0].time}
@@ -295,7 +301,7 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
               <FormControlInputText
                 type="text"
                 id="inputSpeaker1Slot2"
-                name="speakers[0].slots[1].topic"
+                name="speakers[0].slots[0].topic"
                 placeholder="Speaker 1 Topic 2"
                 formik={formik}
                 value={formik.values.speakers[0].slots[0].topic}
@@ -400,7 +406,7 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
               <FormControlInputText
                 type="time"
                 id="inputSpeaker2Slot1"
-                name="speakers[1].slots[1].time"
+                name="speakers[1].slots[0].time"
                 placeholder="Speaker 2 Slot 1"
                 formik={formik}
                 value={formik.values.speakers[1].slots[0].time}
@@ -416,7 +422,7 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
               <FormControlInputText
                 type="text"
                 id="inputSpeaker2Slot2"
-                name="speakers[1].slots[1].topic"
+                name="speakers[1].slots[0].topic"
                 placeholder="Speaker 2 Topic 2"
                 formik={formik}
                 value={formik.values.speakers[1].slots[0].topic}
@@ -492,9 +498,17 @@ const EventForm = ({initialValues, url, method, history, btnText}) => {
             </div>
           </div>
         </div>
-        <button className="btn btn-sm btn-primary mb-2 w-25" type="submit">
-          {btnText} Event
-        </button>
+        {!isLoading ? (
+          <button className="btn btn-sm btn-primary mb-2 w-25" type="submit">
+            {btnText} Event
+          </button>
+        ) : (
+          <LoadingButton
+            buttonText={
+              btnText === "created" ? "Creating event " : "Updating event"
+            }
+          />
+        )}
       </form>
     </div>
   )

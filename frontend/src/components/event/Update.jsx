@@ -33,6 +33,7 @@ const UpdateEventForm = ({id}) => {
           url={`/api/event/${id}`}
           method="put"
           btnText="Update"
+          message="updated"
         />
       ) : (
         <h1>Loading ...</h1>

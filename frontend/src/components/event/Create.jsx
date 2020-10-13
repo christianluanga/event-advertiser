@@ -9,6 +9,7 @@ const CreateEventForm = () => {
       url="/api/event"
       method="post"
       btnText="Create"
+      message="created"
     />
   )
 }

@@ -1,4 +1,3 @@
-const {model} = require("../src/resource/user/user.model")
 const encryptPassword = require("../utils/hash")
 
 const createUser = (model) => async (req, res) => {
@@ -50,25 +49,32 @@ const deleteOneUser = (model) => async (req, res) => {
 }
 
 const bookingEvent = (model) => async (req, res) => {
+  const {eventIDs} = req
+  let ids = []
   const {eventID} = req.params
   const {userID} = req.body
-  console.log(eventID)
+  eventIDs.event.map((event) => ids.push(event.eventID))
+  console.log(ids, eventID)
+  if (ids.toString().includes(eventID.toString())) {
+    return res.status(402).json({
+      message: "Already registered"
+    })
+  }
+
   model
     .findByIdAndUpdate(userID, {$push: {event: {eventID}}}, {new: true})
     .exec((err, events) => {
       if (err || !events) {
         return res.status(400).json({
-          error: "event does not exist"
+          message: "event does not exist"
         })
       }
-      return res
-        .status(200)
-        .json({message: `event successfully updated`, events})
+      return res.status(200).json({message: "registration succeful"})
     })
 }
 
 const getUserEventIDs = (model) => async (req, res, next) => {
-  const {id} = req.params
+  const id = req.params.id || req.body.userID
   model.findById(id).exec((err, eventIDs) => {
     if (err || !eventIDs) {
       return res.status(400).json({
@@ -78,6 +84,18 @@ const getUserEventIDs = (model) => async (req, res, next) => {
     req.eventIDs = eventIDs
     next()
   })
+}
+
+const getAllEvents = (model) => async (req, res) => {
+  const {eventIDs} = req
+
+  try {
+    const events = await model.find({status: "upcoming"}).lean().exec()
+    res.status(200).json(events)
+  } catch (err) {
+    console.error(err)
+    res.status(400).end()
+  }
 }
 
 const updateUserEvent = (model) => (req, res) => {
@@ -91,7 +109,6 @@ const updateUserEvent = (model) => (req, res) => {
       {new: true}
     )
     .exec((err, event) => {
-      console.log(event)
       if (err || !event) {
         return res.status(400).json({
           error: "event does not exist"
